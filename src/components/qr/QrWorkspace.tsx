@@ -9,13 +9,28 @@ export function QrWorkspace() {
   const [matrix, setMatrix] = useState<boolean[][] | null>(null);
   const [shape, setShape] = useState<QrShape>({ type: "square" });
 
+  // Step 3: logo state
+  const [logoEnabled, setLogoEnabled] = useState(false);
+  const [logoSrc, setLogoSrc] = useState<string | null>(null);
+
   useEffect(() => {
     generateQrMatrix("https://example.com").then(setMatrix);
   }, []);
 
   if (!matrix) return null;
 
-  /* ---------- Button styles (temporary, dev-only) ---------- */
+  const handleLogoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setLogoSrc(reader.result);
+        setLogoEnabled(true);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  /* ---------- button styles (dev-only) ---------- */
 
   const baseBtn: React.CSSProperties = {
     padding: "10px 12px",
@@ -36,7 +51,7 @@ export function QrWorkspace() {
   const isPolygon = (sides: number) =>
     shape.type === "polygon" && shape.sides === sides;
 
-  /* --------------------------------------------------------- */
+  /* -------------------------------------------- */
 
   return (
     <main
@@ -50,7 +65,7 @@ export function QrWorkspace() {
         alignItems: "start",
       }}
     >
-      {/* Controls (Step 2 test controls) */}
+      {/* Controls */}
       <div
         style={{
           background: "white",
@@ -62,7 +77,7 @@ export function QrWorkspace() {
           height: "fit-content",
         }}
       >
-        <div style={{ fontWeight: 700 }}>Shape (Step 2 Test)</div>
+        <div style={{ fontWeight: 700 }}>Shape</div>
 
         <button
           style={shape.type === "square" ? activeBtn : baseBtn}
@@ -91,6 +106,29 @@ export function QrWorkspace() {
         >
           Hexagon
         </button>
+
+        <hr />
+
+        <label style={{ fontWeight: 700 }}>
+          <input
+            type="checkbox"
+            checked={logoEnabled}
+            onChange={(e) => setLogoEnabled(e.target.checked)}
+            style={{ marginRight: "8px" }}
+          />
+          Add Center Logo
+        </label>
+
+        <input
+          type="file"
+          accept="image/*"
+          disabled={!logoEnabled}
+          onChange={(e) => {
+            if (e.target.files?.[0]) {
+              handleLogoUpload(e.target.files[0]);
+            }
+          }}
+        />
       </div>
 
       {/* Preview */}
@@ -104,7 +142,14 @@ export function QrWorkspace() {
           boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
         }}
       >
-        <QrSvgGrid matrix={matrix} shape={shape} />
+        <QrSvgGrid
+          matrix={matrix}
+          shape={shape}
+          logo={{
+            enabled: logoEnabled,
+            src: logoSrc,
+          }}
+        />
       </div>
     </main>
   );
