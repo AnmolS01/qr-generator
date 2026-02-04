@@ -15,6 +15,29 @@ export function QrWorkspace() {
 
   if (!matrix) return null;
 
+  /* ---------- Button styles (temporary, dev-only) ---------- */
+
+  const baseBtn: React.CSSProperties = {
+    padding: "10px 12px",
+    borderRadius: "10px",
+    border: "1px solid #e5e7eb",
+    background: "#ffffff",
+    cursor: "pointer",
+    fontWeight: 600,
+    textAlign: "left",
+  };
+
+  const activeBtn: React.CSSProperties = {
+    ...baseBtn,
+    border: "1px solid #111827",
+    background: "#f9fafb",
+  };
+
+  const isPolygon = (sides: number) =>
+    shape.type === "polygon" && shape.sides === sides;
+
+  /* --------------------------------------------------------- */
+
   return (
     <main
       style={{
@@ -27,7 +50,7 @@ export function QrWorkspace() {
         alignItems: "start",
       }}
     >
-      {/* Controls (temporary for Step 2 testing) */}
+      {/* Controls (Step 2 test controls) */}
       <div
         style={{
           background: "white",
@@ -41,12 +64,31 @@ export function QrWorkspace() {
       >
         <div style={{ fontWeight: 700 }}>Shape (Step 2 Test)</div>
 
-        <button onClick={() => setShape({ type: "square" })}>Square</button>
-        <button onClick={() => setShape({ type: "circle" })}>Circle</button>
-        <button onClick={() => setShape({ type: "polygon", sides: 5 })}>
+        <button
+          style={shape.type === "square" ? activeBtn : baseBtn}
+          onClick={() => setShape({ type: "square" })}
+        >
+          Square
+        </button>
+
+        <button
+          style={shape.type === "circle" ? activeBtn : baseBtn}
+          onClick={() => setShape({ type: "circle" })}
+        >
+          Circle
+        </button>
+
+        <button
+          style={isPolygon(5) ? activeBtn : baseBtn}
+          onClick={() => setShape({ type: "polygon", sides: 5 })}
+        >
           Pentagon
         </button>
-        <button onClick={() => setShape({ type: "polygon", sides: 6 })}>
+
+        <button
+          style={isPolygon(6) ? activeBtn : baseBtn}
+          onClick={() => setShape({ type: "polygon", sides: 6 })}
+        >
           Hexagon
         </button>
       </div>
